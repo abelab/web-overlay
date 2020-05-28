@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir":"./dist.portal",
+    "declarationDir": "./dist.portal",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "debug-level": ["../../packages/manager/src/@types/debug-level.d.ts"],
+      "get-browser-rtc": ["../../packages/manager/src/@types/get-browser-rtc.d.ts"],
+      "openpgp": ["../../packages/manager/src/@types/openpgp.d.ts"],
+      "node-config-ts": ["./config/Config.d.ts"]
+    }
+  },
+  "include": ["./src/portal/*.ts"]
+}

@@ -1,0 +1,8 @@
+{
+    "MY_URL": "http://localhost:8080",
+    "KEY": "0",
+    "LOG_SERVER_URL": "http://localhost:8801",
+    "INTRODUCER_URL": null,
+    "OVERLAY": "kirin",
+    "DEBUG": "DEBUG:*"
+}

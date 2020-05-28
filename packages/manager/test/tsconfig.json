@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "removeComments": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "outDir": "bin",
+    "rootDir": ".",
+    "sourceMap": true,
+    "strict": true,
+    "experimentalDecorators": true,
+    "paths": {
+      "debug-level": ["../src/@types/debug-level.d.ts"],
+      "get-browser-rtc": ["../src/@types/get-browser-rtc.d.ts"],
+      "openpgp": ["../src/@types/openpgp.d.ts"]
+    }
+  }
+}
