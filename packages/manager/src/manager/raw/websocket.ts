@@ -10,7 +10,6 @@ import {
 import { quote } from "../../utils";
 import { serializable } from "../serialize";
 import { override } from "core-decorators";
-import { WsServerConnection } from "../../portal/raw/websocketserver";
 
 /**
  * A message to bind WebServerSocketConnection and PeerConnection at a portal node.
@@ -43,14 +42,7 @@ export class Hello extends RequestMessage<Hello, HelloReply> {
         const nodeId = this.srcNodeId as string;
         raw.setRemoteNodeId(nodeId);
         logger.debug("Hello.onReceive: %s", raw);
-        let clientIP = undefined;
-        if (
-            this.rawConnection!.getConnectionType() ===
-            RawConnectionType.WebServerSocket
-        ) {
-            clientIP = (this
-                .rawConnection as WsServerConnection).getClientIPAddress();
-        }
+        const clientIP = this.rawConnection?.getRemoteIPAddress();
         const defer = this.manager.getHelloDefer(nodeId, false);
         if (!manager.networkId || manager.networkId === this.networkId) {
             if (defer) {

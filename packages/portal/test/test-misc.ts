@@ -16,7 +16,7 @@ import {
     SerializeUtils,
     TimeoutDeferred,
     transient,
-} from "..";
+} from "@web-overlay/manager";
 
 /**
  * simple insertion and deletion test

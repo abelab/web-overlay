@@ -11,9 +11,9 @@
     "strict": true,
     "experimentalDecorators": true,
     "paths": {
-      "debug-level": ["../src/@types/debug-level.d.ts"],
-      "get-browser-rtc": ["../src/@types/get-browser-rtc.d.ts"],
-      "openpgp": ["../src/@types/openpgp.d.ts"]
+      "debug-level": ["../../packages/manager/src/@types/debug-level.d.ts"],
+      "get-browser-rtc": ["../../packages/manager/src/@types/get-browser-rtc.d.ts"],
+      "openpgp": ["../../packages/manager/src/@types/openpgp.d.ts"]
     }
   }
 }

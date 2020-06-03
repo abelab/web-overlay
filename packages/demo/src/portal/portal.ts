@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
 import { generateRandomId, Logger, Manager } from "@web-overlay/manager";
-import {
-    PortalManager,
-    PortalManagerConfig,
-} from "@web-overlay/manager/dist/portal";
+import { PortalManager, PortalManagerConfig } from "@web-overlay/portal";
 import {
     createPStoreClass,
     DdllNode,

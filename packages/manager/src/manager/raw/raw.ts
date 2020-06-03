@@ -308,6 +308,10 @@ export abstract class RawConnection implements Cleanable {
         this.cleaner.clean();
     }
 
+    public getRemoteIPAddress(): string | undefined {
+        return undefined;
+    }
+
     protected formatIdleTime(): string {
         return `idle=${(Date.now() - this.lastUsed)
             .toString()

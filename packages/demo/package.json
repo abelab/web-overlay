@@ -1,26 +1,10 @@
 {
   "name": "@web-overlay/demo",
   "version": "0.0.0",
-  "description": "Demo program for Web-based overlay networks",
+  "description": "demonstration program of web-overlay",
   "author": "Kota Abe <k-abe@osaka-cu.ac.jp>",
-  "contributors": [
-    "Li Jiaoke",
-    "Yuji Kawai",
-    "Zheng Yanzu",
-    "Ryo Tanaka"
-  ],
-  "homepage": "",
+  "homepage": "https://web-overlay.github.io",
   "license": "GPL-3.0-only",
-  "directories": {
-    "lib": "lib",
-    "test": "__tests__"
-  },
-  "files": [
-    "lib"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "test": "echo \"Error: run tests from root\" && exit 1",
     "serve": "vue-cli-service serve",
@@ -34,6 +18,7 @@
   "dependencies": {
     "@web-overlay/kirin": "^0.0.0",
     "@web-overlay/manager": "^0.0.0",
+    "@web-overlay/portal": "^0.0.0",
     "detect-browser": "^5.1.0",
     "moment": "^2.26.0",
     "node-config-ts": "^3.0.4",

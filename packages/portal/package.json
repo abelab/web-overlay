@@ -1,7 +1,7 @@
 {
-  "name": "@web-overlay/kirin",
+  "name": "@web-overlay/portal",
   "version": "0.0.0",
-  "description": "Kirin, a scalable key-based structured overlay network, including DDLL (distributed doubly-linked list) implementation",
+  "description": "connection manager of web-overlay for portal nodes",
   "author": "Kota Abe <k-abe@osaka-cu.ac.jp>",
   "contributors": [
     "Li Jiaoke",
@@ -15,39 +15,36 @@
     "build": "tsc",
     "precommit": "lint-staged",
     "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "eslint src/*/*.ts",
+    "lint": "eslint src/**/*.ts",
     "test": "mocha -- test/*.ts"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "dependencies": {
     "@web-overlay/manager": "^0.0.0",
-    "base64-js": "^1.3.1",
     "core-decorators": "^0.20.0",
-    "jssha": "^2.4.2",
-    "openpgp": "^4.10.2",
-    "text-table": "^0.2.0"
+    "node-static": "^0.7.11",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
-    "@types/base64-js": "^1.2.5",
-    "@types/debug": "^4.1.5",
-    "@types/jssha": "^2.0.0",
     "@types/mocha": "^7.0.2",
     "@types/node": "13.11.1",
-    "@types/text-table": "^0.2.1",
+    "@types/node-static": "^0.7.5",
+    "@types/socket.io": "^2.1.6",
     "@typescript-eslint/eslint-plugin": "3.0.0",
     "@typescript-eslint/parser": "3.0.0",
     "assert": "^2.0.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
+    "get-browser-rtc": "^1.0.2",
     "lint-staged": "^9.2.5",
     "mocha": "^6.2.3",
     "mocha-typescript": "^1.1.17",
     "prettier": "^2.0.5",
-    "source-map-support": "^0.5.18",
+    "source-map-support": "^0.5.19",
     "ts-loader": "^6.2.2",
-    "ts-node": "^8.9.0",
+    "ts-node": "^8.10.1",
     "typedoc": "^0.17.7",
     "typescript": "^3.9.3"
   }

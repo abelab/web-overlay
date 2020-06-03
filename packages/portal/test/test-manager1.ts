@@ -1,6 +1,6 @@
 import assert = require("assert");
-import { defaultConfig, Logger, Manager, PeerConnection, sleep } from "../dist";
-import { PortalManager } from "../dist/portal";
+import { defaultConfig, Logger, Manager, PeerConnection, sleep } from "@web-overlay/manager";
+import { PortalManager } from "..";
 import { DummyRequest, DummyRequestPattern } from "./common";
 
 const logger = new Logger("test", "", "");

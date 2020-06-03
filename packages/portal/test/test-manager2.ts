@@ -30,7 +30,7 @@ import {
     WsConnection,
     DisconnectedError,
     Cleaner,
-} from "../dist";
+} from "@web-overlay/manager";
 import { PortalManager, WsServerConnection } from "../dist/portal";
 import assert = require("assert");
 

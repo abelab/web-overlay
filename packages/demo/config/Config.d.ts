@@ -1,6 +1,6 @@
 /* eslint-disable */
 declare module "node-config-ts" {
-  import { PortalManagerConfig } from "@web-overlay/manager/dist/portal";
+  import { PortalManagerConfig } from "@web-overlay/portal";
   interface IConfig extends Partial<PortalManagerConfig> {
     KEY: string,
     INTRODUCER_URL?: string,

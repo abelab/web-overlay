@@ -4,8 +4,9 @@ import {
     Message,
     RawConnection,
     RawConnectionType,
-} from "../../manager";
-import { quote } from "../../utils";
+    quote
+} from "@web-overlay/manager";
+import {override} from "core-decorators";
 
 /**
  * Socket.IO server connection
@@ -64,7 +65,8 @@ export class WsServerConnection extends RawConnection {
         super.destroy();
     }
 
-    public getClientIPAddress(): string | undefined {
+    @override
+    public getRemoteIPAddress(): string | undefined {
         return this.socket?.conn?.remoteAddress;
     }
 }

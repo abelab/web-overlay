@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir":"./dist",
+    "declarationDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "debug-level": ["../../packages/manager/src/@types/debug-level.d.ts"],
+      "get-browser-rtc": ["../../packages/manager/src/@types/get-browser-rtc.d.ts"],
+      "openpgp": ["../../packages/manager/src/@types/openpgp.d.ts"]
+    }
+  },
+  "include": ["./src"]
+}

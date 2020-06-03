@@ -1,26 +1,10 @@
 {
   "name": "@web-overlay/logserver",
   "version": "0.0.0",
-  "description": "Log server for Web-based overlay networks",
+  "description": "log server of web-overlay",
   "author": "Kota Abe <k-abe@osaka-cu.ac.jp>",
-  "contributors": [
-    "Li Jiaoke",
-    "Yuji Kawai",
-    "Zheng Yanzu",
-    "Ryo Tanaka"
-  ],
-  "homepage": "",
+  "homepage": "https://web-overlay.github.io",
   "license": "GPL-3.0-only",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
-  "files": [
-    "lib"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "build": "tsc",
     "precommit": "lint-staged",

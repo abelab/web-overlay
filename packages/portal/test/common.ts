@@ -11,8 +11,8 @@ import {
     RequestMessage,
     RequestMessageSpec,
     serializable,
-} from "../dist";
-import { PortalManager } from "../dist/portal";
+} from "@web-overlay/manager";
+import { PortalManager } from "..";
 import { override } from "core-decorators";
 
 export function toFixedDigits(num: number, d: number): string {

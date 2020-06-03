@@ -4,9 +4,8 @@ import * as http from "http";
 import * as nodeStatic from "node-static";
 import * as socketIO from "socket.io";
 import * as URL from "url";
-import { Manager, NodeSpec, ManagerConfig } from "../manager";
+import { Manager, NodeSpec, ManagerConfig, Deferred } from "@web-overlay/manager";
 import { WsServerConnection } from "./raw/websocketserver";
-import { Deferred } from "../utils";
 import { Socket } from "net";
 
 export type PortalManagerConfigAdd = {

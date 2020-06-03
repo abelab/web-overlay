@@ -14,7 +14,7 @@ import {
     RawConnectionType,
     serializable,
     sleep,
-} from "../dist";
+} from "@web-overlay/manager";
 import {
     DummyReply,
     DummyRequest,
