@@ -1,11 +1,6 @@
 // eslint-disable no-constant-condition
-import {
-    DdllNode, NREPLICA, PerKeyEnt, PStoreError, PutOption
-} from "../dist";
-import {
-    Logger,
-    sleep,
-} from "@web-overlay/manager";
+import { DdllNode, NREPLICA, PerKeyEnt, PStoreError, PutOption } from "..";
+import { Logger, sleep } from "@web-overlay/manager";
 import { TestBase } from "./common";
 import { suite, test, timeout } from "mocha-typescript";
 import assert = require("assert");

@@ -42,6 +42,7 @@ export class ChatRequest extends MulticastRequest<ChatRequest, ChatReply> {
         const reply = new ChatReply(this);
         this.sendReply(reply);
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public reduce(a: ChatReply, b: ChatReply): ChatReply {
         return new ChatReply(this);
     }
@@ -93,7 +94,7 @@ export class ChatApp {
         const doFetch = async () => {
             let next = this.nextIndex;
             const N = 100;
-            while (true) {
+            for (;;) {
                 let articles: ChatArticle[];
                 try {
                     articles = (await this.pStore.rawGetMulti(
@@ -133,7 +134,7 @@ export class ChatApp {
 
     public async sendArticle(text: string): Promise<void> {
         let m: ChatArticle;
-        while (true) {
+        for (;;) {
             m = {
                 index: this.nextIndex,
                 handle: this.handle,
@@ -174,7 +175,7 @@ export class ChatApp {
         await defer.promise;
     }
 
-    public chatReceive(msg: ChatRequest) {
+    public chatReceive(msg: ChatRequest): void {
         const index = Number(msg.article.index);
         this.nextIndex = Math.max(this.nextIndex, index);
         this.articleMap.set(index, msg.article);

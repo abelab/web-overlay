@@ -14,8 +14,7 @@
     "build": "tsc",
     "precommit": "lint-staged",
     "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "eslint src/**/*.ts",
-    "test": "mocha -- test/*.ts"
+    "lint": "eslint src/**/*.ts"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.js",
@@ -25,6 +24,7 @@
     "debug-level": "^0.3.1",
     "detect-browser": "^5.1.0",
     "detect-node": "^2.0.4",
+    "get-browser-rtc": "^1.0.2",
     "graphlib": "^2.1.7",
     "node-static": "^0.7.11",
     "openpgp": "^4.10.4",
@@ -36,7 +36,6 @@
     "@types/debug": "^4.1.5",
     "@types/detect-node": "^2.0.0",
     "@types/graphlib": "^2.1.6",
-    "@types/mocha": "^7.0.2",
     "@types/node": "13.11.1",
     "@types/simple-peer": "^9.6.0",
     "@types/socket.io-client": "^1.4.33",
@@ -46,14 +45,9 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.3",
-    "get-browser-rtc": "^1.0.2",
     "lint-staged": "^9.2.5",
-    "mocha": "^6.2.3",
-    "mocha-typescript": "^1.1.17",
     "prettier": "^2.0.5",
     "source-map-support": "^0.5.19",
-    "ts-loader": "^6.2.2",
-    "ts-node": "^8.10.1",
     "typedoc": "^0.17.7",
     "typescript": "^3.9.3"
   }

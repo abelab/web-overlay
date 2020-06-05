@@ -10,8 +10,8 @@ import {
     serializable,
     sleep,
 } from "@web-overlay/manager";
-import {PortalManager} from "@web-overlay/manager/dist/portal";
-import {createPStoreClass, DdllNode, PStoreIf, Status,} from "../dist";
+import { PortalManager } from "@web-overlay/portal";
+import { createPStoreClass, DdllNode, PStoreIf, Status } from "..";
 import assert = require("assert");
 
 export function toFixedDigits(num: number, d: number): string {

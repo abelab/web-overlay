@@ -1,11 +1,6 @@
 import { suite, test, timeout } from "mocha-typescript";
 import { createPStoreClass, KirinNode, PStoreIf } from "../dist";
-import {
-    applyMixins,
-    Logger,
-    Manager,
-    sleep,
-} from "@web-overlay/manager";
+import { applyMixins, Logger, Manager, sleep } from "@web-overlay/manager";
 import * as base from "./common";
 
 class KirinOverride {

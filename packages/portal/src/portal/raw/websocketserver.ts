@@ -4,9 +4,9 @@ import {
     Message,
     RawConnection,
     RawConnectionType,
-    quote
+    quote,
 } from "@web-overlay/manager";
-import {override} from "core-decorators";
+import { override } from "core-decorators";
 
 /**
  * Socket.IO server connection
