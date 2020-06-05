@@ -1,7 +1,5 @@
 import assert = require("assert");
-import { override } from "core-decorators";
 import * as GraphLib from "graphlib";
-import { suite, test, timeout } from "mocha-typescript";
 import {
     ArraySet,
     ArrayUtils,
@@ -15,94 +13,85 @@ import {
     serializable,
     SerializeUtils,
     TimeoutDeferred,
+    TimeoutError,
     transient,
 } from "@web-overlay/manager";
 
 /**
  * simple insertion and deletion test
  */
-@suite
-class TestMisc {
-    @test()
-    public testPath(): void {
+describe("misc", () => {
+    it("testPath", () => {
         {
             const path = ["a", "b"];
             const opt = Path.optimizePath(path);
-            console.log(opt);
+            // console.log(opt);
             assert(opt.toString() === path.toString());
         }
         {
             const path = ["a", "a"];
             const opt = Path.optimizePath(path);
-            console.log(opt);
+            // console.log(opt);
             assert(opt.toString() === ["a"].toString());
         }
         {
             const path = ["a", "b", "b", "b", "c"];
             const opt = Path.optimizePath(path);
-            console.log(opt);
+            // console.log(opt);
             assert(opt.toString() === ["a", "b", "c"].toString());
         }
         {
             const path = ["a", "b", "c", "d", "b"];
             const opt = Path.optimizePath(path);
-            console.log(opt);
+            // console.log(opt);
             assert(opt.toString() === ["a", "b"].toString());
         }
         {
             const path = ["a", "b", "c", "b", "d", "e", "d", "f"];
             const opt = Path.optimizePath(path);
-            console.log(opt);
+            // console.log(opt);
             assert(opt.toString() === ["a", "b", "d", "f"].toString());
         }
-    }
+    });
 
-    @test()
-    public testPromise(): void {
-        const promise = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve();
-                console.log("after resolve");
-            });
-        });
-        promise.then(() => {
-            console.log("then");
-        });
-    }
-
-    @test()
-    public testSet(): void {
+    it("EquitySet", () => {
         const s1: EquitySet<string[]> = new EquitySet((v1, v2) => {
-            console.log("v1=", v1, ", v2=", v2);
+            // console.log("v1=", v1, ", v2=", v2);
             return v1.length === v2.length;
         });
-        s1.add(["a", "b"]);
-        s1.add(["c", "d"]);
-        s1.add(["c", "d", "e"]);
-        console.log(s1);
-    }
+        const a1 = ["a", "b"];
+        const a2 = ["c", "d"];
+        const a3 = ["e", "f", "g"];
+        s1.add(a1);
+        s1.add(a2);
+        s1.add(a3);
+        assert.strictEqual(s1.size, 2);
+        assert.strictEqual(s1.has(a1), true);
+        assert.strictEqual(s1.has(a3), true);
+    });
 
-    @test()
-    public testArraySet(): void {
+    it("ArraySet", () => {
         const s1: ArraySet<string> = new ArraySet((v1, v2) => {
             return v1 === v2;
         });
         s1.add(["a", "b"]);
         s1.add(["a", "b"]);
         s1.add(["c", "d", "e"]);
-        console.log(s1);
-    }
+        assert.strictEqual(s1.size, 2);
+        assert.strictEqual(s1.has(["a", "b"]), true);
+        assert.strictEqual(s1.has(["c", "d", "e"]), true);
+        // console.log(s1);
+    });
 
-    @test()
-    public testIntersects(): void {
+    it("intersects", () => {
         const a = ["a", "b", "c"];
         const b = ["b", "c", "d"];
         const c = ArrayUtils.intersects(a, b);
-        console.log(c);
-    }
+        assert.deepStrictEqual(c, ["b", "c"]);
+        // console.log(c);
+    });
 
-    @test(timeout(10000))
-    public async testConcurrentExecutor(): Promise<void> {
+    it("testConcurrentExecutor", async () => {
         const con = new ConcurrentExecutor<number>(4, 2);
         let i = 0;
         while (!con.isSatisfied()) {
@@ -128,11 +117,10 @@ class TestMisc {
         }
         await con.waitAll();
         console.log("finished: " + con.getResults());
-    }
+    }).timeout(10000);
 
-    @test
-    public testTopK(): void {
-        const g = new GraphLib.Graph({ directed: false });
+    it("testTopK", () => {
+        const g = new GraphLib.Graph({directed: false});
         g.setEdge("C", "D", 3);
         g.setEdge("C", "E", 2);
         g.setEdge("D", "F", 4);
@@ -153,118 +141,69 @@ class TestMisc {
         );
         const pruned = GraphUtils.pruneRedundantPaths(topk);
         console.log("pruned=", pruned);
-    }
+    });
 
-    @test
-    public testOverride(): void {
-        const child = new Child();
-        child.aMethod(() => {
-            //
-        });
-    }
-
-    // @test
-    public prttyPrint(): void {
+    it("prettyPrint", () => {
         const obj = {
             a: "a",
             b: 100,
             c: true,
-            d: { e: "internal" },
+            d: {e: "internal"},
             f: [10, 20, 30],
             g: false,
         };
         const x = prettyPrint(obj);
-        console.log(x);
-    }
+        assert.strictEqual(x, '{a="a", b=100, c, d={e="internal"}, f=[10, 20, 30], ~g}');
+        // console.log(x);
+    });
 
-    // @test
-    public async testDeferTimeout(): Promise<string> {
+    it("TimeoutDeferred", async () => {
         const d = new TimeoutDeferred<string>(1000, "abc");
-        d.resolve("dd");
-        d.then(
-            (s) => {
-                console.log("resolved: " + s);
-            },
-            (err) => {
-                console.log("error: " + err);
-            }
-        );
-        return d.promise;
-    }
+        // d.resolve("dd");
+        try {
+            await d;
+            assert(false);
+        } catch (err) {
+            assert(err instanceof TimeoutError);
+            assert.strictEqual(err.message, "abc");
+        }
+    });
 
-    // @test
-    public testSort(): void {
+    it("sortCircular", () => {
         const a = ["000", "aaa", "bbb"];
-        const b = CircularSpace.sortCircular("000", a, (x) => x, true);
-        console.log(b);
-        const c = CircularSpace.sortCircular("000", a, (x) => x, false);
-        console.log(c);
-    }
+        const b = CircularSpace.sortCircular("aaa", a, (x) => x, true);
+        // console.log(b);
+        assert.deepStrictEqual(b, ["bbb", "000", "aaa"]);
+        const c = CircularSpace.sortCircular("aaa", a, (x) => x, false);
+        // console.log(c);
+        assert.deepStrictEqual(c, ["aaa", "bbb", "000"]);
+    });
 
-    // @test
-    public testConst(): void {
-        let a = 10;
-        const func = () => console.log(a);
-        a = 20;
-        func();
-    }
-
-    @test
-    public testTransient(): void {
+    it("testTransient", () => {
         const nested = new NestedSample();
-        console.log(SerializeUtils.isSerializable(nested));
+        assert.strictEqual(SerializeUtils.isSerializable(nested), true);
         const a = new Sample();
         nested.sample = a;
         a.a = "a";
-        a.b = "b";
-        a.c = "c";
+        a.b = "b"; // transient
+        a.c = "c"; // transient
         const json = JSON.stringify(nested);
-        console.log("JSON=", json);
-        for (const i in a) {
-            console.log("a=", i);
-        }
-        console.log("$class=", (nested as any).$class);
+        //console.log("JSON=", json);
+        //for (const i in a) {
+        //    console.log("a=", i);
+        //}
+        assert.strictEqual((nested as any).$class, undefined);
         const r = SerializeUtils.restorePrototype(JSON.parse(json));
-        console.log("r=", r);
-        console.log("r=", Object.getOwnPropertyNames(r));
-        for (const i in r) {
-            console.log("r=", i);
-        }
-    }
-
-    // @test(timeout(3000))
-    // public async testCleanSched() {
-    //     const clean = new Cleanup();
-    //     let flag = undefined;
-    //     clean.sched("TEST", 100, () => {
-    //         flag = true;
-    //     });
-    //     clean.sched("TEST", 50, () => {
-    //         flag = false;
-    //     });
-    //     await sleep(200);
-    //     assert.strictEqual(flag, false);
-    //     console.log(clean.toString());
-    //     clean.sched("TEST", 100, () => {
-    //         flag = true;
-    //     });
-    //     clean.clean();
-    //     await sleep(200);
-    //     assert.strictEqual(flag, false);
-    //     console.log(clean.toString());
-    //
-    //     let count = 0;
-    //     clean.sched("TEST1", 100, () => {
-    //         count++;
-    //     });
-    //     clean.sched("TEST2", 100, () => {
-    //         count++;
-    //     });
-    //     console.log(clean.toString());
-    //     await sleep(200);
-    //     assert.strictEqual(count, 2);
-    // }
-}
+        assert(r instanceof NestedSample);
+        assert(r.sample instanceof Sample);
+        //console.log("r=", r);
+        //console.log("r=", Object.getOwnPropertyNames(r));
+        //for (const i in r) {
+        //    console.log("r=", i);
+        //}
+        assert.strictEqual(prettyPrint(r), '{sample={a="a"}}');
+    });
+});
 
 @serializable
 class Sample {
@@ -278,20 +217,4 @@ class Sample {
 @serializable
 class NestedSample {
     sample?: Sample;
-}
-
-class Base {
-    public aMethod(foo: (bar: string) => void): string {
-        return "Base";
-    }
-    public foo(p: number, q: string): void {
-        //
-    }
-}
-
-class Child extends Base {
-    @override
-    public aMethod(foo: (bar: string) => void): string {
-        return "Child";
-    }
 }

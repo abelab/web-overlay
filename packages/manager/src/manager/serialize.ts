@@ -67,10 +67,6 @@ export class PrototypeAlreadyRestoredException extends CustomError {
     }
 }
 
-type hoge = {
-    $class: string;
-    $restored: boolean;
-};
 export abstract class SerializeUtils {
     public static readonly CLASSNAME_FIELD = "$class";
 

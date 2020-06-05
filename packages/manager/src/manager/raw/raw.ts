@@ -49,7 +49,8 @@ export abstract class RawConnection implements Cleanable {
     protected constructor(_manager: Manager) {
         this._manager = _manager;
         this.logger = _manager.rawLogger;
-        this.cleaner = new Cleaner(this.logger);
+        this.cleaner = new Cleaner(this.logger, _manager.cleaner);
+        return;
         _manager.registerRawConnection(this);
 
         // this timer is canceled when connection is established

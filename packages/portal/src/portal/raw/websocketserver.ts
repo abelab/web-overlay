@@ -19,6 +19,9 @@ export class WsServerConnection extends RawConnection {
         super(_manager);
         this.socket = sock;
         this.localWsId = sock.id;
+        this.cleaner.push(() => {
+            this.socket.disconnect();
+        });
         sock.on("message", (_json: string) => {
             this.logger.newEvent("websocket-server: message");
             const msg: Message = JSON.parse(_json);

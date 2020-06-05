@@ -175,12 +175,21 @@ export class WsConnection extends RawConnection {
      */
     public connect(): Promise<RawConnection> {
         this.logger.debug(`WsConnection.connect: url=${this.url}`);
+        let trans: string[];
+        if (process.env.NODE_ENV === "test") {
+            // disable "polling" on testing.
+            // when "polling" is enabled, Node.js sometimes does not exit if we connect and disconnect Socket.io
+            // connection very quickly (which is common in testing).
+            trans = ["websocket"];
+        } else {
+            trans = ["polling", "websocket"];
+        }
         this.socket = io(this.url, {
             // we do not use multiplexing of Socket.IO.
             multiplex: false,
             reconnection: false,
             timeout: this.manager.config.REPLY_TIMEOUT,
-            transports: ["polling", "websocket"],
+            transports: trans,
         });
         this.cleaner.push(() => {
             this.logger.debug("websocket: close!");

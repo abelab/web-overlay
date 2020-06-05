@@ -15,13 +15,8 @@ import {
     serializable,
     sleep,
 } from "@web-overlay/manager";
-import {
-    DummyReply,
-    DummyRequest,
-    DummyRequestPattern,
-    ManagerType,
-    prepareManagers,
-} from "./common";
+import {DummyReply, DummyRequest, DummyRequestPattern, ManagerType, prepareManagers,} from "./common";
+import {DisconnectedError} from "@web-overlay/manager/dist";
 
 const logger = new Logger("test", "test", "");
 let cleaner = new Cleaner(logger);
@@ -446,6 +441,128 @@ describe("Manager APIs", () => {
             assert.strictEqual(beforeSendCounter.get("P2"), undefined);
         }
     });
+
+    it("muted node becomes suspicious", async () => {
+        const [connectP, acceptP, managers] = await testConnectRaw(
+            ["P", "M", "M"],
+            "normal"
+        );
+        const pc1to2 = await connectP;
+        const req = new DummyRequest(managers[1], DummyRequestPattern.NORMAL);
+        managers[0].mute();
+        try {
+            const reply = await req.request(pc1to2);
+            assert(false);
+        } catch (err) {
+            assert(err instanceof DisconnectedError);
+            assert.deepStrictEqual(managers[1].getSuspiciousNodes(), [
+                managers[0].getNodeId()
+            ]);
+        }
+    }).timeout(10000);
+
+    it("multiplexed PeerConnection", async () => {
+        const [connectP, acceptP, managers] = await testConnectRaw(
+            ["P", "M", "P"],
+            "normal"
+        );
+        const pc1to2 = await connectP;
+        assert.strictEqual(pc1to2.getConnectionType(), RawConnectionType.WebClientSocket);
+        const req = new TestConnectionRequest(
+            managers[1],
+            managers[1].getNodeId(),
+            managers[2].getNodeId(),
+            "normal"
+        );
+        const pc1to2dash = await req.connect(new Path(["P1", "P0", "P2"]));
+        assert.notStrictEqual(pc1to2, pc1to2dash);
+        assert.strictEqual(pc1to2.getRawConnection(), pc1to2dash.getRawConnection());
+    });
+
+    it("redundant relay connection is established", async () => {
+        const [
+            managers,
+            [pc1to0, pc2to0],
+        ] = await prepareManagers(
+            cleaner,
+            5,
+            false,
+            ["P", "P", "P", "M", "M"]
+        );
+        // connect from P3 to {P1, P2}
+        for (let i = 1; i <= 2; i++) {
+            const req = new TestConnectionRequest(
+                managers[3],
+                managers[3].getNodeId(),
+                managers[i].getNodeId(),
+                "normal"
+            );
+            await req.connect(managers[i].getNodeSpec().serverUrl);
+        }
+        const req = new TestConnectionRequest(
+            managers[4],
+            managers[4].getNodeId(),
+            managers[3].getNodeId(),
+            "normal"
+        );
+        const pc = await req.connect(new Path(["P4", "P0", "P3"]));
+        console.log(pc.toString());
+        // check if we have 3 routes from P4 to P3
+        assert.strictEqual(pc.paths.length, 3);
+        // check if we can send a message from P4 to P3 even if some relay nodes are muted
+        managers[0].mute();
+        managers[1].mute(); // we still have P4->P2->P3 route
+        const dum = new DummyRequest(managers[4], DummyRequestPattern.NORMAL);
+        // Logger.enable("DEBUG:*");
+        const reply = await dum.request(pc);
+        assert(reply instanceof DummyReply);
+        await sleep(10000);
+        console.log(pc.toString());
+        assert.strictEqual(pc.paths.length, 1);
+        assert.strictEqual(pc.isConnected(), true);
+    }).timeout(20000);
+
+    it("redundancy of a relay connection increases", async () => {
+        const conf: ManagerConfig = {
+            RELAY_PATH_MAINTENANCE_PERIOD: 5 * 1000
+        };
+        const [
+            managers,
+            [pc1to0, pc2to0],
+        ] = await prepareManagers(
+            cleaner,
+            5,
+            false,
+            ["P", "P", "P", "M", "M"],
+            conf
+        );
+        let pc: PeerConnection;
+        {
+            const req = new TestConnectionRequest(
+                managers[4],
+                managers[4].getNodeId(),
+                managers[3].getNodeId(),
+                "normal"
+            );
+            pc = await req.connect(new Path(["P4", "P0", "P3"]));
+            console.log(pc.toString());
+            // check if we have 1 route from P4 to P3
+            assert.strictEqual(pc.paths.length, 1);
+        }
+        // then, connect from P3 to P1 and from P4 to P2
+        for (const [from, to] of [[3, 1], [4, 2]]) {
+            const req = new TestConnectionRequest(
+                managers[from],
+                managers[from].getNodeId(),
+                managers[to].getNodeId(),
+                "normal"
+            );
+            await req.connect(managers[to].getNodeSpec().serverUrl);
+        }
+        await sleep(10000);
+        console.log(pc.toString());
+        assert.strictEqual(pc.paths.length, 3);
+    }).timeout(20000);
 });
 
 describe("cleaner", async () => {
@@ -466,7 +583,8 @@ describe("cleaner", async () => {
 });
 
 describe("logger", async () => {
-    it("check", () => {
+    // node.js does not exit on this test
+    it.skip("check", () => {
         // Logger.enable("*");
         const testLogger = new Logger(
             "loggerTest",
@@ -504,9 +622,9 @@ async function testConnectRaw(
     managerTypes: ManagerType[],
     testType: TestType = "normal",
     conf?: ManagerConfig
-): Promise<Promise<PeerConnection>[]> {
+): Promise<[Promise<PeerConnection>, Promise<PeerConnection>, Manager[]]> {
     const [
-        [manager0, manager1, manager2],
+        managers,
         [pc1to0, pc2to0],
     ] = await prepareManagers(
         cleaner,
@@ -515,6 +633,7 @@ async function testConnectRaw(
         managerTypes,
         conf
     );
+    const [manager0, manager1, manager2] = managers;
     acceptDeferred = new Deferred<PeerConnection>();
     const req = new TestConnectionRequest(
         manager1,
@@ -523,7 +642,7 @@ async function testConnectRaw(
         testType
     );
     const connectPromise = req.connect(new Path(["P1", "P0", "P2"]));
-    return [connectPromise, acceptDeferred.promise];
+    return [connectPromise, acceptDeferred.promise, managers];
 }
 
 async function testConnect(

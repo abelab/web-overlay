@@ -499,7 +499,6 @@ export class Manager implements Cleanable {
     }
 
     public registerRawConnection(raw: RawConnection): void {
-        this.cleaner.addChild(raw);
         if (raw.id === undefined) {
             raw.id = this.nextRawId++;
             this.rawConnections[raw.id] = raw;

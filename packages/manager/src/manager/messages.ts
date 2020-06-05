@@ -324,7 +324,7 @@ export class AckStat {
     cleaner: Cleaner;
     constructor(public message: Message, public destRaw: RawConnection) {
         this.manager = message.manager;
-        this.cleaner = new Cleaner(this.manager.mgrLogger, message.cleaner);
+        this.cleaner = new Cleaner(this.manager.mgrLogger);
     }
     public destroy(): void {
         this.cleaner.clean();

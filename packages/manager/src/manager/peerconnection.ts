@@ -86,7 +86,7 @@ export class PeerConnection implements Cleanable {
         this.logger = _manager.mgrLogger;
         this.localKey = _localKey;
         this.isConnectSide = isConnectSide;
-        this.cleaner = new Cleaner(_manager.mgrLogger);
+        this.cleaner = new Cleaner(_manager.mgrLogger, _manager.cleaner);
         _manager.registerPeerConnection(this);
         this.cleaner.push(() => {
             _manager.unregisterPeerConnection(this);
