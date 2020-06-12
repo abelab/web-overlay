@@ -4,6 +4,7 @@
   "description": "demonstration program of web-overlay",
   "author": "Kota Abe <k-abe@osaka-cu.ac.jp>",
   "homepage": "https://web-overlay.github.io",
+  "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
     "serve": "vue-cli-service serve",
