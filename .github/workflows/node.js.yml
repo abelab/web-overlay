@@ -27,4 +27,4 @@ jobs:
     - run: npm ci
     - run: npx lerna bootstrap
     - run: npm run build --if-present
-    - run: npm test
+    - run: npx lerna run --stream test -- --ci
