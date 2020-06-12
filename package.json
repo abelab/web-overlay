@@ -3,5 +3,10 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.22.0"
+  },
+  "scripts": {
+    "build": "lerna run build --include-dependents",
+    "lint": "lerna run lint --parallel",
+    "test": "lerna run tet --parallel"
   }
 }
