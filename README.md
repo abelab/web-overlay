@@ -1,5 +1,7 @@
 # Overview
 
+![Node.js CI](https://github.com/abelab/web-overlay/workflows/Node.js%20CI/badge.svg)
+
 *Web-Overlay* is an experimental toolkit for constructing Web-based
 overlay networks, where each node (peer) is either a Web browser or a
 Node.js.  WebRTC and WebSocket (actually
