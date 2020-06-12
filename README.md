@@ -1,5 +1,3 @@
-![topology](images/topo.png)
-
 # Overview
 
 *Web-Overlay* is an experimental toolkit for constructing Web-based
