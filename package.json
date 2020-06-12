@@ -7,6 +7,6 @@
   "scripts": {
     "build": "lerna run build --include-dependents",
     "lint": "lerna run lint --parallel",
-    "test": "lerna run tet --parallel"
+    "test": "lerna run test --parallel"
   }
 }
