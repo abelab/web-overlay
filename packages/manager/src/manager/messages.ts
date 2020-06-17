@@ -53,6 +53,9 @@ export abstract class Message {
     /** refers to the container message if this message is piggybacked */
     @transient
     protected container?: Message;
+    /** to figure out if this instance is received one or created (new()'ed) one */
+    @transient
+    public isReceived = false;
 
     /**
      * @constructor
@@ -79,9 +82,18 @@ export abstract class Message {
         return this.msgId;
     }
 
-    public invokeOnReceive(): void {
+    public invokeOnReceive(key?: string): void {
         if (!this.source) {
             this.initSource();
+        }
+        if (key) {
+            this.manager.setAutomaticProps(key, this);
+        }
+        // to allow code like:
+        //   const msg = new SomeMessage();
+        //   msg.invokeOnReceive();
+        if (!this.isReceived) {
+            this.beforeSend();
         }
         try {
             this.onReceive();
@@ -130,15 +142,12 @@ export abstract class Message {
         this._manager = container.manager;
         this.rawConnection = container.rawConnection;
         this.peerConnection = container.peerConnection;
+        this.isReceived = true;
         if (container.source) {
             this.source = new Path(
                 container.source.asArray(),
                 container.source.connId
             );
-        }
-        const key = container.peerConnection?.getLocalKey();
-        if (key) {
-            this.manager.setAutomaticProps(key, this);
         }
     }
 
@@ -383,7 +392,7 @@ export abstract class RequestMessage<
     }
 
     @override
-    public beforeSend(pc: PeerConnection): void {
+    public beforeSend(pc?: PeerConnection): void {
         if (this.isRequestingNode) {
             // call prepareForReply at most once
             if (!this.manager._lookupRequestMessage(this.msgId)) {
@@ -572,16 +581,16 @@ export abstract class ReplyMessage<
     }
 
     public onReceive(): void {
-        const req = this.manager._unregisterRequestMessage(this.reqMsgId);
-        this.req = req as T;
-        if (this.req) {
+        const req = this.manager._lookupRequestMessage(this.reqMsgId);
+        if (req) {
+            this.req = req as T;
             this.manager.mgrLogger.debug(
                 "%s.onReceive: reqMsgId=%d, req=%s",
                 this.constructor.name,
                 this.reqMsgId,
                 req
             );
-            this.req._gotReply(this);
+            this.req._gotReply(this); // request is destroyed here
         } else {
             this.manager.mgrLogger.info(
                 "%s.onReceive: reqMsgId=%d, request not found (OK if sent via multiple paths)",
@@ -715,8 +724,7 @@ export abstract class ConnectionRequest extends RequestMessage<
             }
         } else {
             msg.beforeSend();
-            this.manager.setAutomaticProps(this.connectKey, this);
-            this.invokeOnReceive();
+            this.invokeOnReceive(this.connectKey);
         }
         return this.getConnectPromise();
     }

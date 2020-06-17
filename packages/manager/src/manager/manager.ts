@@ -668,17 +668,14 @@ export class Manager implements Cleanable {
      */
     public receive(msg: Message): void {
         // this.logger.debug("Manager.receive: ", msg);
+        msg.isReceived = true;
         // source node is no longer suspicious
         const src = msg.srcNodeId;
         if (src) {
             this.suspiciousNodes.delete(src);
         }
-        // copy properties that are set by registerApp().
         const pc = msg.peerConnection;
-        if (pc) {
-            this.setAutomaticProps(pc.getLocalKey(), msg);
-        }
-        msg.invokeOnReceive();
+        msg.invokeOnReceive(pc?.getLocalKey());
     }
 
     public setAutomaticProps(key: string, msg: Message) {

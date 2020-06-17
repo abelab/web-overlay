@@ -164,13 +164,7 @@ export class ForwardToPredecessor
             logger.debug("dnode=%s", dnode);
             this.piggybackMessage.initFromContainer(this);
             this.piggybackMessage.source = this.path; // overwrite source
-            // because initFromContainer() calls setAutomaticProps() only if PeerConnection is
-            // explicitly specified, we call it to make sure that .ddll is set in the piggybackMessage.
-            this.manager.setAutomaticProps(
-                dnode.getKey(),
-                this.piggybackMessage
-            );
-            this.piggybackMessage.invokeOnReceive();
+            this.piggybackMessage.invokeOnReceive(dnode.getKey());
         }
         this.sendReply(new ForwardToPredecessorReply(this));
     }
@@ -652,8 +646,7 @@ export class Unicast extends Message implements DdllMessage {
         const node = DdllNode.getDdllNode(manager, next.getRemoteKey());
         if (node?.isResponsible(this.destKey)) {
             this.msg.initFromContainer(this);
-            manager.setAutomaticProps(node.getKey(), this.msg);
-            manager.receive(this.msg);
+            this.msg.invokeOnReceive(node.getKey());
             return;
         }
         // this happens if right node is faulty and not yet recovered.

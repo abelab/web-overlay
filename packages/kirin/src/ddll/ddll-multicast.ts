@@ -182,9 +182,7 @@ export class RQRequest<
                 this.finish(MulticastRequest.EOR);
             }
         });
-        this.peerConnection = ddll.self;
-        this.beforeSend(this.peerConnection);
-        this.manager.receive(this);
+        this.invokeOnReceive(ddll.getKey());
     }
 
     public onReceive(): void {

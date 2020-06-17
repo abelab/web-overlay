@@ -1211,6 +1211,8 @@ export class PeerConnection implements Cleanable {
                 raw.send(msg);
             }
         }
+        // XXX: workaround: to allow messages to be sent to multiple PeerConnections.
+        msg.destination = undefined;
     }
 
     /*
