@@ -49,6 +49,7 @@ export class PeerConnection implements Cleanable {
     public static readonly EXPIRE_RECEIVED_IDS_TIME = 120 * 1000;
     private readonly manager: Manager;
     private readonly logger: Logger;
+    private remoteNodeId?: string;
     public localConnId!: number; // assigned by Manager#registerPeerConnection
     public remoteConnId?: number;
     private readonly localKey: string;
@@ -919,6 +920,7 @@ export class PeerConnection implements Cleanable {
             // we are using relay path.
             this.startRelayMaintenanceTask(true);
         }
+        this.remoteNodeId = path.destNodeId;
         this.addPath(path);
         this.cleaner.cancelTimer(PeerConnection.RELAY_ESTABLISH_TIMER_NAME);
         this.connectFinishTime = Date.now();
@@ -1102,14 +1104,11 @@ export class PeerConnection implements Cleanable {
     }
 
     public getRemoteNodeId(): string {
-        if (this._paths[0]) {
-            return this._paths[0].destNodeId;
-        }
-        return "?";
+        return this.remoteNodeId || "?";
     }
 
     /**
-     * remoteKeyを取得
+     * Get the remote key
      * @returns {string}
      */
     public getRemoteKey(): string {
