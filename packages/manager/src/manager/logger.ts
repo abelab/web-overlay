@@ -34,19 +34,17 @@ export class Logger {
         DEBUG: console.log,
         LOG: console.log,
     };
-    // LogSender instance is per Manager
-    private static logSender = new Map<string /*nodeId*/, LogSender>();
 
-    constructor(nodeId: string, namespace: string, key: string, url?: string) {
+    constructor(
+        nodeId: string,
+        namespace: string,
+        key: string,
+        sender?: LogSender
+    ) {
         this.nodeId = nodeId;
         this.namespace = namespace;
         this.key = key;
         this.debugLevel = new DebugLevel(namespace);
-        let sender: LogSender | undefined;
-        if (url) {
-            sender = Logger.logSender.get(nodeId) || new LogSender(nodeId, url);
-            Logger.logSender.set(nodeId, sender);
-        }
         const supportColor = DebugLevel.options().colors;
         if (!isNode) {
             // rewrite internal _log function
@@ -282,5 +280,9 @@ export class LogSender {
             this.socket.emit("log", JSON.stringify(data));
         }
         this.lost = 0;
+    }
+
+    public destroy(): void {
+        this.socket.close();
     }
 }

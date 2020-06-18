@@ -586,12 +586,7 @@ describe("logger", async () => {
     // node.js does not exit on this test
     it.skip("check", () => {
         // Logger.enable("*");
-        const testLogger = new Logger(
-            "loggerTest",
-            "loggerTest",
-            "key",
-            `http://localhost:${DEFAULT_LOG_SERVER_PORT}`
-        );
+        const testLogger = new Logger("loggerTest" ,"loggerTest", "key");
         testLogger.debug("this is debug");
         testLogger.debug("aaa line1\nbbb line2\nccc line3");
         testLogger.destroy();

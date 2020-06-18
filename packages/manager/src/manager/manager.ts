@@ -22,7 +22,7 @@ import { WsConnection } from "./raw/websocket";
 import { LoopbackConnection } from "./raw/loopback";
 import { Cleanable, Cleaner } from "./cleaner";
 import { WebRTCConnection } from "./raw/webrtc";
-import { Logger } from "./logger";
+import { Logger, LogSender } from "./logger";
 import isNode = require("detect-node");
 
 // setup UnhandledRejectionHandler for debugging
@@ -150,6 +150,7 @@ export interface PortalCacheInfo {
 export class Manager implements Cleanable {
     public readonly config: Config;
     public appLoggers = new Map<string /* App Name */, Logger>();
+    private readonly logSender?: LogSender;
     public readonly mgrLogger: Logger;
     public readonly rawLogger: Logger;
     public readonly networkId?: string;
@@ -216,10 +217,17 @@ export class Manager implements Cleanable {
         if (conf) {
             Object.assign(this.config, conf);
         }
-        if (this.config.DEBUG) {
-            Logger.enable(this.config.DEBUG);
-        }
         this.nodeId = conf?.NODE_ID || generateRandomId();
+        if (this.config.LOG_SERVER_URL) {
+            this.logSender = new LogSender(
+                this.nodeId,
+                this.config.LOG_SERVER_URL
+            );
+        }
+        const debug = process?.env?.DEBUG || this.config.DEBUG;
+        if (debug) {
+            Logger.enable(debug);
+        }
         this.networkId = conf?.NETWORK_ID;
         this.mgrLogger = this.createLogger("web:general");
         this.rawLogger = this.createLogger("web:raw");
@@ -227,6 +235,7 @@ export class Manager implements Cleanable {
         this.cleaner.push(() => {
             this.mgrLogger.destroy();
             this.rawLogger.destroy();
+            this.logSender?.destroy();
         });
         this.mgrLogger.info("Manager started: %s", this.getAgentString());
         if (!isNode && !this.isWebRTCSupported) {
@@ -668,17 +677,14 @@ export class Manager implements Cleanable {
      */
     public receive(msg: Message): void {
         // this.logger.debug("Manager.receive: ", msg);
+        msg.isReceived = true;
         // source node is no longer suspicious
         const src = msg.srcNodeId;
         if (src) {
             this.suspiciousNodes.delete(src);
         }
-        // copy properties that are set by registerApp().
         const pc = msg.peerConnection;
-        if (pc) {
-            this.setAutomaticProps(pc.getLocalKey(), msg);
-        }
-        msg.invokeOnReceive();
+        msg.invokeOnReceive(pc?.getLocalKey());
     }
 
     public setAutomaticProps(key: string, msg: Message) {
@@ -901,7 +907,7 @@ export class Manager implements Cleanable {
             this.nodeId,
             nameSpace,
             additionalPrefix || "",
-            this.config.LOG_SERVER_URL
+            this.logSender
         );
     }
 
