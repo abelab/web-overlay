@@ -55,11 +55,16 @@ export class PortalManager extends Manager {
 
     public async start(): Promise<this> {
         const dir = (this.config as PortalManagerConfig).HTTP_SERVER_ROOT_DIR;
-        if (this.url === PortalManager.TestURL) {
-            this.httpServer = await this.startServer(9999, dir);
-        } else {
-            this.httpServer = await this.startServer(this.port, dir);
-            await this.checkServer();
+        try {
+            if (this.url === PortalManager.TestURL) {
+                this.httpServer = await this.startServer(9999, dir);
+            } else {
+                this.httpServer = await this.startServer(this.port, dir);
+                await this.checkServer();
+            }
+        } catch (err) {
+            this.destroy();
+            throw err;
         }
         return this;
     }
